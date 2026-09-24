@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rio Pardo Events</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{
+    --bg:#090D16; --surface:#121824; --border:#1E293B;
+    --txt:#FFFFFF; --txt2:#94A3B8; --accent:#2563EB; --amber:#D97706;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-serif;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .scrollbar-none::-webkit-scrollbar{display:none}
+  .scrollbar-none{-ms-overflow-style:none;scrollbar-width:none}
+  .pill{white-space:nowrap;scroll-snap-align:start;}
+  .card{background:var(--surface);border:1px solid var(--border);}
+  .modal-backdrop{background:rgba(2,4,9,.8);}
+  .navbtn{min-width:44px;min-height:44px;}
+  .fade-in{animation:fadeIn .18s ease-out;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  ::selection{background:var(--accent);color:#fff;}
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+</style>
+</head>
+<body class="min-h-screen pb-20 md:pb-0">
+
+<!-- HEADER -->
+<header class="sticky top-0 z-40 border-b" style="background:var(--bg);border-color:var(--border);padding-top:env(safe-area-inset-top,0px)">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div>
+      <h1 class="text-lg font-extrabold tracking-tight">RIO PARDO EVENTS</h1>
+      <p class="text-xs" style="color:var(--txt2)">📍 São José do Rio Pardo - SP</p>
+    </div>
+    <button onclick="openAddModal()" class="hidden md:flex items-center gap-2 px-4 py-2 rounded-md font-semibold text-sm" style="background:var(--accent)">
+      ➕ Divulgar evento
+    </button>
+  </div>
+
+  <!-- Day filters -->
+  <div class="max-w-6xl mx-auto px-4 pb-2 flex gap-2 overflow-x-auto scrollbar-none snap-x" id="dayFilters"></div>
+  <!-- Category filters -->
+  <div class="max-w-6xl mx-auto px-4 pb-3 flex gap-2 overflow-x-auto scrollbar-none snap-x" id="catFilters"></div>
+</header>
+
+<main class="max-w-6xl mx-auto px-4">
+
+  <!-- MASTER SPONSOR BANNER -->
+  <div class="mt-4 rounded-md border card flex items-center justify-between px-4" style="min-height:100px">
+    <div>
+      <p class="text-xs font-semibold" style="color:var(--amber)">ESPAÇO PUBLICITÁRIO</p>
+      <p class="text-sm font-semibold mt-1">Anuncie sua empresa para toda a cidade</p>
+      <p class="text-xs" style="color:var(--txt2)">Adegas, restaurantes, bares e lojas do Rio Pardo</p>
+    </div>
+    <a href="#" class="shrink-0 px-3 py-2 rounded-md text-xs font-semibold border" style="border-color:var(--border)">Fale no Comercial</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="mt-4">
+    <div id="heroCard" class="rounded-lg border card overflow-hidden cursor-pointer" style="min-height:220px"></div>
+  </section>
+
+  <!-- FEED -->
+  <section class="mt-6">
+    <h2 class="text-sm font-semibold mb-3" style="color:var(--txt2)">Próximos eventos</h2>
+    <div id="feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="mt-10 py-8 border-t text-xs flex flex-wrap gap-4 justify-between items-center" style="border-color:var(--border);color:var(--txt2)">
+    <p>© 2026 Rio Pardo Events</p>
+    <div class="flex gap-4">
+      <a href="#" class="hover:text-white">Política de Privacidade</a>
+      <a href="#" class="hover:text-white">Termos de Uso</a>
+      <a href="#" class="hover:text-white">Suporte</a>
+    </div>
+  </footer>
+</main>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="fixed bottom-0 left-0 right-0 z-50 md:hidden border-t" style="background:var(--surface);border-color:var(--border);padding-bottom:env(safe-area-inset-bottom,0px)">
+  <div class="grid grid-cols-5">
+    <button class="navbtn flex flex-col items-center justify-center py-2 text-xs" style="color:var(--txt)">🏠<span class="mt-0.5">Início</span></button>
+    <button class="navbtn flex flex-col items-center justify-center py-2 text-xs" style="color:var(--txt2)">📅<span class="mt-0.5">Agenda</span></button>
+    <button onclick="openAddModal()" class="navbtn flex flex-col items-center justify-center py-2 text-xs" style="color:var(--txt2)">➕<span class="mt-0.5">Divulgar</span></button>
+    <button class="navbtn flex flex-col items-center justify-center py-2 text-xs" style="color:var(--txt2)">⭐<span class="mt-0.5">Destaques</span></button>
+    <button class="navbtn flex flex-col items-center justify-center py-2 text-xs" style="color:var(--txt2)">💬<span class="mt-0.5">Contato</span></button>
+  </div>
+</nav>
+
+<!-- EVENT DETAIL MODAL -->
+<div id="detailModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop" onclick="if(event.target===this)closeDetail()">
+  <div class="card rounded-lg max-w-md w-full max-h-[85vh] overflow-y-auto fade-in">
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<!-- ADD EVENT MODAL -->
+<div id="addModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop" onclick="if(event.target===this)closeAddModal()">
+  <div class="card rounded-lg max-w-md w-full max-h-[85vh] overflow-y-auto fade-in">
+    <div class="p-5 flex items-center justify-between border-b" style="border-color:var(--border)">
+      <h3 class="font-bold">Cadastrar evento</h3>
+      <button onclick="closeAddModal()" class="text-xl leading-none" style="color:var(--txt2)">✕</button>
+    </div>
+    <form id="eventForm" class="p-5 flex flex-col gap-3" onsubmit="submitEvent(event)">
+      <label class="text-xs" style="color:var(--txt2)">Nome do evento
+        <input required class="mt-1 w-full rounded-md px-3 py-2 text-sm border bg-transparent" style="border-color:var(--border)">
+      </label>
+      <label class="text-xs" style="color:var(--txt2)">Nome do responsável
+        <input required class="mt-1 w-full rounded-md px-3 py-2 text-sm border bg-transparent" style="border-color:var(--border)">
+      </label>
+      <label class="text-xs" style="color:var(--txt2)">WhatsApp de contato
+        <input required type="tel" class="mt-1 w-full rounded-md px-3 py-2 text-sm border bg-transparent" style="border-color:var(--border)">
+      </label>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="text-xs" style="color:var(--txt2)">Data
+          <input required type="date" class="mt-1 w-full rounded-md px-3 py-2 text-sm border bg-transparent" style="border-color:var(--border)">
+        </label>
+        <label class="text-xs" style="color:var(--txt2)">Horário
+          <input required type="time" class="mt-1 w-full rounded-md px-3 py-2 text-sm border bg-transparent" style="border-color:var(--border)">
+        </label>
+      </div>
+      <label class="text-xs" style="color:var(--txt2)">Local
+        <input required class="mt-1 w-full rounded-md px-3 py-2 text-sm border bg-transparent" style="border-color:var(--border)">
+      </label>
+      <label class="text-xs" style="color:var(--txt2)">Categoria
+        <select class="mt-1 w-full rounded-md px-3 py-2 text-sm border bg-transparent" style="border-color:var(--border)">
+          <option>Festas</option><option>Shows & Bares</option><option>Gastronomia</option><option>Cultura</option>
+        </select>
+      </label>
+      <fieldset class="text-xs" style="color:var(--txt2)">
+        <legend class="mb-1">Pacote de visibilidade</legend>
+        <div class="flex gap-3">
+          <label class="flex items-center gap-1"><input type="radio" name="pkg" checked> Gratuito/Padrão</label>
+          <label class="flex items-center gap-1"><input type="radio" name="pkg"> Destaque pago</label>
+        </div>
+      </fieldset>
+      <button id="submitBtn" type="submit" class="mt-2 w-full py-3 rounded-md font-semibold text-sm" style="background:var(--accent)">Enviar para verificação</button>
+      <p id="cooldownMsg" class="text-xs text-center hidden" style="color:var(--amber)"></p>
+    </form>
+  </div>
+</div>
+
+<!-- VERIFICATION STATUS MODAL -->
+<div id="statusModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop" onclick="if(event.target===this)closeStatus()">
+  <div class="card rounded-lg max-w-sm w-full p-6 text-center fade-in">
+    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4" style="background:#3F2E05;color:#FBBF24">🟡 PENDENTE DE VERIFICAÇÃO MANUAL</span>
+    <p class="text-sm mb-5">Recebemos seu evento! Nossa equipe entrará em contato via WhatsApp em até 2 horas para confirmar as informações e liberar a publicação.</p>
+    <a href="#" class="block w-full py-3 rounded-md font-semibold text-sm mb-2" style="background:var(--amber)">💬 Contratar Destaque Pago</a>
+    <button onclick="closeStatus()" class="block w-full py-2 text-sm" style="color:var(--txt2)">Fechar</button>
+  </div>
+</div>
+
+<script>
+// ---------- DATA ----------
+const DAYS = ['Todos','Hoje','Sexta','Sábado','Domingo'];
+const CATS = [{k:'Todas',l:'Todas'},{k:'Festas',l:'🎉 Festas'},{k:'Shows',l:'🎵 Shows & Bares'},{k:'Gastronomia',l:'🍕 Gastronomia'},{k:'Cultura',l:'🎭 Cultura'}];
+const COLORS=['#1E3A8A','#78350F','#065F46','#5B21B6','#7C2D12','#134E4A'];
+const EVENTS = [
+  {id:1,name:'Festa do Peão',cat:'Festas',day:'Sábado',date:'27/09',time:'20:00',local:'Recinto de Exposições',sponsored:true,desc:'Shows ao vivo, rodeio e barracas de comida típica durante toda a noite.'},
+  {id:2,name:'Rock no Bar do Zé',cat:'Shows',day:'Sexta',date:'26/09',time:'21:00',local:'Bar do Zé',sponsored:false,desc:'Banda cover de clássicos do rock nacional e internacional.'},
+  {id:3,name:'Feira Gastronômica',cat:'Gastronomia',day:'Domingo',date:'28/09',time:'11:00',local:'Praça Central',sponsored:true,desc:'Food trucks, doces artesanais e música ao vivo para toda a família.'},
+  {id:4,name:'Noite de Jazz',cat:'Cultura',day:'Sexta',date:'26/09',time:'19:30',local:'Teatro Municipal',sponsored:false,desc:'Apresentação do quarteto local de jazz instrumental.'},
+  {id:5,name:'Sunset Pool Party',cat:'Festas',day:'Sábado',date:'27/09',time:'16:00',local:'Clube Recreativo',sponsored:false,desc:'Open bar, DJ set e piscina aquecida a partir das 16h.'},
+  {id:6,name:'Sertanejo na Adega',cat:'Shows',day:'Sábado',date:'27/09',time:'22:00',local:'Adega do Vale',sponsored:true,desc:'Dupla sertaneja e degustação de vinhos selecionados.'},
+  {id:7,name:'Brunch Cultural',cat:'Gastronomia',day:'Domingo',date:'28/09',time:'10:00',local:'Café das Artes',sponsored:false,desc:'Brunch com exposição de artistas locais em paralelo.'},
+  {id:8,name:'Exposição de Fotografia',cat:'Cultura',day:'Hoje',date:'24/09',time:'18:00',local:'Casa de Cultura',sponsored:false,desc:'Mostra fotográfica sobre a história da cidade.'},
+];
+
+let activeDay='Todos', activeCat='Todas';
+
+// ---------- RENDER FILTERS ----------
+const dayWrap=document.getElementById('dayFilters');
+DAYS.forEach(d=>{
+  const b=document.createElement('button');
+  b.textContent=d; b.dataset.day=d;
+  b.className='pill px-4 py-1.5 rounded-full text-sm border font-medium';
+  b.onclick=()=>{activeDay=d;renderFilters();renderFeed();};
+  dayWrap.appendChild(b);
+});
+const catWrap=document.getElementById('catFilters');
+CATS.forEach(c=>{
+  const b=document.createElement('button');
+  b.textContent=c.l; b.dataset.cat=c.k;
+  b.className='pill px-4 py-1.5 rounded-full text-sm border font-medium';
+  b.onclick=()=>{activeCat=c.k;renderFilters();renderFeed();};
+  catWrap.appendChild(b);
+});
+function renderFilters(){
+  [...dayWrap.children].forEach(b=>styleFilter(b,b.dataset.day===activeDay));
+  [...catWrap.children].forEach(b=>styleFilter(b,b.dataset.cat===activeCat));
+}
+function styleFilter(b,active){
+  b.style.borderColor='var(--border)';
+  if(active){b.style.background='var(--accent)';b.style.color='#fff';b.style.borderColor='var(--accent)';}
+  else{b.style.background='transparent';b.style.color='var(--txt2)';}
+}
+
+// ---------- RENDER HERO ----------
+const hero=EVENTS.find(e=>e.sponsored) || EVENTS[0];
+document.getElementById('heroCard').innerHTML=`
+  <div class="relative flex flex-col justify-end p-5" style="min-height:220px;background:${COLORS[hero.id%COLORS.length]}">
+    <span class="absolute top-4 left-4 px-2 py-1 rounded text-xs font-bold" style="background:var(--bg)">${hero.date} · ${hero.time}</span>
+    <span class="absolute top-4 right-4 px-2 py-1 rounded text-xs font-bold" style="background:var(--amber)">⭐ DESTAQUE DA SEMANA</span>
+    <h3 class="text-xl font-extrabold">${hero.name}</h3>
+    <p class="text-sm" style="color:#E2E8F0">📍 ${hero.local}</p>
+  </div>`;
+document.getElementById('heroCard').onclick=()=>openDetail(hero.id);
+
+// ---------- RENDER FEED ----------
+function eventCard(e){
+  const border = e.sponsored ? 'border-2' : 'border';
+  const borderColor = e.sponsored ? 'var(--amber)' : 'var(--border)';
+  return `
+  <div class="rounded-lg ${border} overflow-hidden card cursor-pointer flex flex-col" style="border-color:${borderColor}" onclick="openDetail(${e.id})">
+    <div class="flex items-center justify-center text-3xl" style="height:120px;background:${COLORS[e.id%COLORS.length]}">🎫</div>
+    <div class="p-4 flex-1 flex flex-col gap-1">
+      ${e.sponsored?'<span class="self-start px-2 py-0.5 rounded text-[10px] font-bold mb-1" style="background:var(--amber)">⭐ DESTAQUE</span>':''}
+      <h4 class="font-bold text-sm leading-snug">${e.name}</h4>
+      <p class="text-xs" style="color:var(--txt2)">${e.date} · ${e.time}</p>
+      <p class="text-xs" style="color:var(--txt2)">📍 ${e.local}</p>
+      <button class="mt-3 w-full py-2 rounded-md text-xs font-semibold border" style="border-color:var(--border)">Ver Detalhes</button>
+    </div>
+  </div>`;
+}
+function adCard(i){
+  return `<div class="rounded-lg border card flex flex-col items-center justify-center text-center p-4" style="min-height:180px;border-color:var(--border)">
+    <p class="text-[10px] font-semibold mb-1" style="color:var(--amber)">PUBLICIDADE</p>
+    <p class="text-sm font-semibold">Espaço disponível para lojistas locais</p>
+    <p class="text-xs mt-1" style="color:var(--txt2)">Fale com o Comercial</p>
+  </div>`;
+}
+function renderFeed(){
+  const list=EVENTS.filter(e=>(activeDay==='Todos'||e.day===activeDay)&&(activeCat==='Todas'||e.cat===activeCat));
+  const feed=document.getElementById('feed');
+  if(!list.length){feed.innerHTML=`<p class="col-span-full text-sm text-center py-10" style="color:var(--txt2)">Nenhum evento encontrado para esse filtro.</p>`;return;}
+  let html='';
+  list.forEach((e,i)=>{
+    html+=eventCard(e);
+    if((i+1)%4===0) html+=adCard(i);
+  });
+  feed.innerHTML=html;
+}
+
+// ---------- DETAIL MODAL ----------
+function openDetail(id){
+  const e=EVENTS.find(x=>x.id===id);
+  document.getElementById('detailContent').innerHTML=`
+    <div class="flex items-center justify-center text-5xl" style="height:180px;background:${COLORS[e.id%COLORS.length]}">🎫</div>
+    <div class="p-5">
+      <div class="flex justify-between items-start mb-2">
+        <h3 class="font-bold text-lg pr-2">${e.name}</h3>
+        <button onclick="closeDetail()" class="text-xl leading-none shrink-0" style="color:var(--txt2)">✕</button>
+      </div>
+      ${e.sponsored?'<span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold mb-2" style="background:var(--amber)">⭐ DESTAQUE</span>':''}
+      <p class="text-sm mb-3" style="color:var(--txt2)">${e.desc}</p>
+      <ul class="text-sm flex flex-col gap-1 mb-5">
+        <li>📅 ${e.date} · ⏰ ${e.time}</li>
+        <li>📍 ${e.local}</li>
+        <li>🏷️ ${e.cat}</li>
+      </ul>
+      <a href="#" class="block w-full text-center py-3 rounded-md font-semibold text-sm" style="background:#22C55E;color:#052e16">💬 Enviar convite no WhatsApp</a>
+    </div>`;
+  document.getElementById('detailModal').classList.replace('hidden','flex');
+}
+function closeDetail(){document.getElementById('detailModal').classList.replace('flex','hidden');}
+
+// ---------- ADD EVENT MODAL + COOLDOWN ----------
+const COOLDOWN_SECONDS=300;
+function openAddModal(){document.getElementById('addModal').classList.replace('hidden','flex');checkCooldown();}
+function closeAddModal(){document.getElementById('addModal').classList.replace('flex','hidden');}
+function closeStatus(){document.getElementById('statusModal').classList.replace('flex','hidden');}
+
+function getLastSubmit(){
+  try{return parseInt(localStorage.getItem('rpe_last_submit')||'0',10);}catch(e){return 0;}
+}
+function setLastSubmit(ts){
+  try{localStorage.setItem('rpe_last_submit',String(ts));}catch(e){}
+}
+let cooldownTimer=null;
+function checkCooldown(){
+  const last=getLastSubmit();
+  const remaining=COOLDOWN_SECONDS-Math.floor((Date.now()-last)/1000);
+  const btn=document.getElementById('submitBtn'), msg=document.getElementById('cooldownMsg');
+  if(remaining>0){
+    btn.disabled=true;btn.style.opacity='.5';msg.classList.remove('hidden');
+    clearInterval(cooldownTimer);
+    let r=remaining;
+    const tick=()=>{
+      const m=String(Math.floor(r/60)).padStart(2,'0'), s=String(r%60).padStart(2,'0');
+      msg.textContent=`⏳ Aguarde ${m}:${s} minutos para cadastrar outro evento por motivos de segurança.`;
+      r--;
+      if(r<0){clearInterval(cooldownTimer);btn.disabled=false;btn.style.opacity='1';msg.classList.add('hidden');}
+    };
+    tick();
+    cooldownTimer=setInterval(tick,1000);
+  } else {
+    btn.disabled=false;btn.style.opacity='1';msg.classList.add('hidden');
+  }
+}
+function submitEvent(ev){
+  ev.preventDefault();
+  setLastSubmit(Date.now());
+  closeAddModal();
+  ev.target.reset();
+  document.getElementById('statusModal').classList.replace('hidden','flex');
+  checkCooldown();
+}
+
+// ---------- INIT ----------
+renderFilters();
+renderFeed();
+</script>
+</body>
+</html>
